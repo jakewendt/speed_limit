@@ -51,6 +51,7 @@ function xmlParser(xml) {
     $(xml).find("marker").each(function () {
 //if( /George Wendt III/.test( $(this).attr('label') ) ){
 			markers.push({
+			  mph: $(this).attr('mph'),
 			  lat: $(this).attr('lat'),
 			  lng: $(this).attr('lng')
 			});
@@ -82,17 +83,19 @@ function addMarkers() {
   baseIcon.iconAnchor = new GPoint(9, 34);
   baseIcon.infoWindowAnchor = new GPoint(9, 2);
   baseIcon.infoShadowAnchor = new GPoint(18, 25);
-  var letteredIcon = new GIcon(baseIcon);
+  var numerIcon = new GIcon(baseIcon);
   for (var i=0; i < markers.length; i++ ) {
     // Create a lettered icon for this point using our icon class
     // Need to deal with possibility of more than 26 markers so restart at A
-    var l = i;
-    while(l>25){ l -= 26 }
-    var letter = String.fromCharCode("A".charCodeAt(0) + l);
-    letteredIcon.image = "http://www.google.com/mapfiles/marker" + letter + ".png";
-    markerOptions = { icon:letteredIcon };
+//    var l = i;
+//    while(l>25){ l -= 26 }
+//    var letter = String.fromCharCode("A".charCodeAt(0) + l);
+//    letteredIcon.image = "http://www.google.com/mapfiles/marker" + letter + ".png";
+//    markerOptions = { icon:letteredIcon };
+    numerIcon.image = "http://google-maps-icons.googlecode.com/files/red" + marker[i][mph] + ".png";
+    markerOptions = { icon:numerIcon };
     map.addOverlay( createMarker( i, markerOptions ) );
-  }
+//  }
 }
 
 function createMarker( index, options) {
@@ -105,17 +108,6 @@ function createMarker( index, options) {
 //  });
   return marker;
 }
-</script>
-
-<script type='text/javascript'>
-/*
-markers.push({
-  position: 26,
-  lat: 36.1788,
-  lng: -115.345,
-  link: "http://my.jakewendt.com/stops/47"
-});
-*/
 </script>
 </head>
 <body onload='initialize(40.930208,-76.792678, 11)' onunload='GUnload()'>

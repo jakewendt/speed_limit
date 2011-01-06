@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<!--
+
+From : http://www.wikispeedia.org/ralph/index.html
+
+-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+<title>Google Maps</title>
+
+<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAu-QJBiQPPBJPoQRuGyymhxQX3On7hvvbnLhVOwjhU1Fecb0hehSy5eaQomd-EeRqFoz-7f5mlG2ppQ"  type="text/javascript"></script> 
+
+</head>
+<body onunload="setCookie()">
+
+<div><a href="process_submit.php.txt">.</a><a href="marks_result.php.txt">.</a></div>
+<table border=1 >
+<tr>
+<td class="">
+<p>
+<input type="button" value="Random 10 speed limit signs" onclick='getmarks("http://www.wikispeedia.org/ralph/marks_result.php?name=10");'>
+<input type="button" value="100" onclick='getmarks("http://www.wikispeedia.org/ralph/marks_result.php?name=100");'>
+<p>
+Submit new speed limit sign.<br /><br />
+Move blue marker to your speedlimit location
+<FORM name="sign" action="process_submit.php" method="post" onsubmit="return checkZoom();">
+<input name="mlat" id="lat"    type="hidden" VALUE=""><p>
+<input name="mlon" id="lng"    type="hidden" VALUE=""><p>
+Mph(Eg 55):                   	     <select id="mmph" name="mmph">
+				     <option value="-"  >Must choose one.</option>
+				     <option value="0" > 0 Mph</option>
+				     <option value="5" > 5 Mph</option>
+				     <option value="10">10 Mph</option>
+				     <option value="15">15 Mph</option>
+				     <option value="20">20 Mph</option>
+				     <option value="25">25 Mph</option>
+				     <option value="30">30 Mph</option>
+				     <option value="35">35 Mph</option>
+				     <option value="40">40 Mph</option>
+				     <option value="45">45 Mph</option>
+				     <option value="50">50 Mph</option>
+				     <option value="55">55 Mph</option>
+				     <option value="60">60 Mph</option>
+				     <option value="65">65 Mph</option>
+				     <option value="70">70 Mph</option>
+				     <option value="75">75 Mph</option>
+				     <option value="80">80 Mph</option>
+				     <option value="85">85 Mph</option>
+				     <option value="90">90 Mph</option>
+				     </select><p>
+
+Direction(Eg 359):                   <select name="mcog">
+				     <option value="-"  >Must choose one.</option>
+				     <option value="0"  >  0 North</option>
+				     <option value="45" > 45 NE</option>
+				     <option value="90" > 90 East</option>
+				     <option value="135">135 SE</option>
+				     <option value="180">180 South</option>
+				     <option value="225">225 SW</option>
+				     <option value="270">270 West</option>
+				     <option value="315">315 NW</option>
+				     </select><p>
+Optional:<br>
+Hours(Eg 7:15-7:45 3:00-3:45 CST):   <input name="mhours"    type="text" VALUE=""><p>
+Your Name (Eg Jane Doe):             <input name="mtag"      type="text" VALUE=""><p>
+Email (for dividends) (a@b.com):     <input name="memail"    type="text" VALUE=""><p>
+Zoom in all the way before sending...
+                                     <input name="sender"   type="submit" VALUE="Send">
+                                     <input name="deleter"  type="submit" VALUE="Delete">
+</FORM> 
+<p>
+Any questions email me at speedup@wikispeedia.org<br>
+<A HREF="../tos.htm">terms</A>
+
+</td><td> <div id="map" style="width:550px;height:500px;" class=""></div></td></tr>
+</table>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<noscript> <p> Enable JavaScript please </p> </noscript>
+    <noscript><b>JavaScript must be enabled in order for you to use Google Maps.</b> 
+      However, it seems JavaScript is either disabled or not supported by your browser. 
+      To view Google Maps, enable JavaScript by changing your browser options, and then 
+      try again.
+    </noscript>
+
+    <script type="text/javascript">
+    //<![CDATA[
+    
+    if (GBrowserIsCompatible()) {
+
+      // === Default values to use if there is no cookie ===
+      var lat = 0;
+      var lng = 0;
+      var zoom = 1;
+      var maptype = 0;
+		
+		var icon = new GIcon();
+		icon.image = "http://www.wikispeedia.org/icon_red_half.png";
+		icon.shadow = "http://labs.google.com/ridefinder/images/mm_20_shadow.png";
+		icon.iconSize = new GSize(12, 20);
+		//icon.iconSize = new GSize(5,5);
+		icon.shadowSize = new GSize(22, 20);
+		icon.iconAnchor = new GPoint(6, 20);
+		icon.infoWindowAnchor = new GPoint(5, 1);
+		
+		var baseIcon = new GIcon();
+        baseIcon.iconSize = new GSize(32, 32);
+        baseIcon.shadowSize = new GSize(56, 32);
+        baseIcon.iconAnchor = new GPoint(16, 32);
+        baseIcon.infoWindowAnchor = new GPoint(16, 0);
+        
+		
+		var href = "http://maps.google.com/mapfiles/ms/micons/blue.png"
+		var shadow = "http://maps.google.com/mapfiles/ms/icons/msmarker.shadow.png";
+      var newicon = new GIcon(baseIcon, href , null, shadow );
+		
+		function createMarker(point,html) {
+			var marker = new GMarker(point, icon);
+	 	GEvent.addListener(marker, "click", function() {marker.openInfoWindowHtml(html); });
+		return marker;
+   	}
+		
+		function checkZoom() {
+
+			emptyfields = "";
+			
+			var zz= map.getZoom();
+			
+			if(zz < 17){
+			emptyfields += "\n - Please Zoom";		 
+			}
+					 	
+			if (document.sign.mmph.options[document.sign.mmph.selectedIndex].value == '-') { 
+			emptyfields += "\n - MPH"; 
+			}
+			 
+			if(document.sign.mcog.options[document.sign.mcog.selectedIndex].value == '-') { 
+			emptyfields += "\n - Direction"; 
+			}
+			 
+			if (emptyfields!= "") { 
+			emptyfields = "These fields are required:\n" + 
+			emptyfields + "\n\nPlease fill in all required feilds"; 
+			alert(emptyfields); 
+			return false; 
+			} 
+			else return true; 
+			} 
+		
+      // === Some cookie parameters ===
+      var cookiename = "mapinfo";  // name for this cookie
+      var expiredays = 7;          // number of days before cookie expiry
+
+
+      // === Look for the cookie ===
+      if (document.cookie.length>0) {
+        cookieStart = document.cookie.indexOf(cookiename + "=");
+        if (cookieStart!=-1) {
+          cookieStart += cookiename.length+1; 
+          cookieEnd=document.cookie.indexOf(";",cookieStart);
+          if (cookieEnd==-1) {
+            cookieEnd=document.cookie.length;
+          }
+          cookietext = document.cookie.substring(cookieStart,cookieEnd);
+          // == split the cookie text and create the variables ==
+          bits = cookietext.split("|");
+          lat = parseFloat(bits[0]);
+          lng = parseFloat(bits[1]);
+          zoom = parseInt(bits[2]);
+          maptype = parseInt(bits[3]);
+        } 
+      }
+
+      // === Display the map ===
+      var map = new GMap2(document.getElementById("map"));
+      map.setCenter(new GLatLng(lat,lng),zoom,map.getMapTypes()[maptype]);
+      map.addControl(new GMapTypeControl());
+      map.addControl(new GLargeMapControl());
+		
+		function getmarks(url) {
+		map.closeInfoWindow();
+		map.clearOverlays();
+		GDownloadUrl(url, function(doc) {
+        var xmlDoc = GXml.parse(doc);
+        var markers = xmlDoc.documentElement.getElementsByTagName("marker");
+          
+        for (var i = 0; i < markers.length; i++) {
+          // obtain the attribues of each marker
+          var lat = parseFloat(markers[i].getAttribute("lat"));
+          var lng = parseFloat(markers[i].getAttribute("lng"));
+          var point = new GLatLng(lat,lng);
+			 var mph = markers[i].getAttribute("mph");
+          var tag   = markers[i].getAttribute("tag");
+          var label = markers[i].getAttribute("name");
+          var hours = markers[i].getAttribute("hours");
+          var html= '<div id=\"infowindow\" style=\"white-space: nowrap;\"> '     + mph + '    Mph  <br> ' + hours + '  <br>  (C) ' + label  + '</div>';
+          // create the marker
+          var marker = createMarker(point,html);
+          map.addOverlay(marker);
+        }
+        var point = new GLatLng(lat, lng);
+        var marker = new GMarker(point, {icon:newicon,draggable: true});
+        map.addOverlay(marker);
+         
+		GEvent.addListener(marker, "dragend", function() {
+		document.getElementById('lat').value = marker.getPoint().lat().toFixed(6);
+		document.getElementById('lng').value = marker.getPoint().lng().toFixed(6);
+		map.setCenter(marker.getPoint(), 13);	  
+		});
+          
+      });
+	}
+		getmarks("http://www.wikispeedia.org/ralph/marks_result.php?name=10");
+		
+      // === Set the cookie before exiting ===
+      function setCookie() {
+        maptype = 0;
+        for (var i=0;i<map.getMapTypes().length;i++) {
+          if (map.getCurrentMapType() == map.getMapTypes()[i]) {
+            maptype = i;
+          }
+        }
+        var cookietext = cookiename+"="+map.getCenter().lat()+"|"+map.getCenter().lng()+"|"+map.getZoom()+"|"+maptype;
+        if (expiredays) {
+          var exdate=new Date();
+          exdate.setDate(exdate.getDate()+expiredays);
+          cookietext += ";expires="+exdate.toGMTString();
+        }
+        
+        document.cookie=cookietext;
+        
+        GUnload();
+      }
+    }
+    
+    
+
+    //]]>
+    </script>
+
+
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10411681-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+
+
+
+
+
+
+
+  </body>
+
+</html>

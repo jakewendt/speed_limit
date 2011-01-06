@@ -1,0 +1,43 @@
+<?php
+
+header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 
+header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+header("content-type:text/xml");
+$name=  $_GET['name'];
+$rlat=$_GET['nelat'];
+$rlng=$_GET['nelng'];
+$llat=$_GET['swlat'];
+$llng=$_GET['swlng'];
+###server information
+$server_name="signs.db";
+$db_user="user";
+$db_pass="your_password_goes_here_amigo";
+$db="signs";
+$link = mysql_connect($server_name,$db_user,$db_pass) or die ("could not connect");
+mysql_select_db($db) or die (mysql_error());
+
+$query="";
+echo "<markers>";
+if ($name != ""){
+###        if($name == "ten") {
+
+          $query = " SELECT tag,lat,lon,mph,kph,cog from signs 
+WHERE  lat > $llat and $rlat > lat  
+and       lon > $llng and $rlng > lon
+###and    tag LIKE 'Pete'   
+        LIMIT 63";
+
+###        }
+        if ($query != ""){
+	     $results = mysql_query($query);
+	     while ($row=mysql_fetch_array($results)){
+	           echo '<marker label="'.$row[0].'" lat="'.$row[1].'" lng="'.$row[2].'"   mph="'.$row[3].'"  kph="'.$row[4].'"   cog="'.$row[5].'" />'; }
+        }
+}
+	echo "</markers>";
+
+?>
+
