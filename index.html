@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Speed Limit Sign Map</title>
+<style>
+div#map {
+  border: 1px solid black;
+  height: 90ex;
+}
+</style>
+<script src="http://jakewendt.com/js/jquery.js" type="text/javascript"></script>
+<script src="http://jakewendt.com/js/jquery-ui.js" type="text/javascript"></script>
+<script type="text/javascript">
+if( /jakewendt/.test(location.hostname) ){
+document.write('<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAB-v7nZ2fkxF0-r3MI9yZuhQpAt4bU7HiNDPgoQAogh38KYDQ_xQZgyFJX2xGvLku3dB9r3BLS7SmFg" type="text/javascript"><'+'/script>');
+} else {
+document.write('<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAB-v7nZ2fkxF0-r3MI9yZuhROBIwYeOsmfolgOSVewupk_6dWgBSiMbXhTbzMOg1qbRS4zmp-4tqQJA" type="text/javascript"><'+'/script>');
+}
+</script>
+
+<!--
+http://www.wikispeedia.org/a/marks_bb.php?name=10&nelat=40.94&swlat=40.86&nelng=-76.78&swlng=-76.86
+
+40.930208,-76.792678
+
+-->
+<script type="text/javascript">
+var map;
+var markers = new Array;
+
+function initialize(lat, lng, zoom) {
+  if ( GBrowserIsCompatible() ) {
+    map = new GMap2(jQuery('#map')[0]);
+    map.setCenter(new GLatLng(lat, lng), zoom);
+    map.addControl(new GLargeMapControl());
+    getsigns();
+  }
+}
+
+function getsigns() {
+    $.ajax({
+        type: "GET",
+        url: "speedlimit.rb",
+        dataType: "xml",
+        success: xmlParser
+    });
+}
+
+function xmlParser(xml) {
+    $(xml).find("marker").each(function () {
+//if( /George Wendt III/.test( $(this).attr('label') ) ){
+			markers.push({
+			  lat: $(this).attr('lat'),
+			  lng: $(this).attr('lng')
+			});
+//}
+// what is cog?
+// marker label="George Wendt III" lat="40.86141080" lng="-76.79745465" mph="35" kph="0" cog="23" 
+    });
+    addMarkers();
+}
+/*
+
+  should add
+
+  map.getCenter().x
+  map.getCenter().y
+  map.getZoom()
+
+  to trip/edit
+
+*/
+
+function addMarkers() {
+  // Create a base icon for all of our markers that specifies the
+  // shadow, icon dimensions, etc.
+  var baseIcon = new GIcon();
+  baseIcon.shadow = "http://www.google.com/mapfiles/shadow50.png";
+  baseIcon.iconSize = new GSize(20, 34);
+  baseIcon.shadowSize = new GSize(37, 34);
+  baseIcon.iconAnchor = new GPoint(9, 34);
+  baseIcon.infoWindowAnchor = new GPoint(9, 2);
+  baseIcon.infoShadowAnchor = new GPoint(18, 25);
+  var letteredIcon = new GIcon(baseIcon);
+  for (var i=0; i < markers.length; i++ ) {
+    // Create a lettered icon for this point using our icon class
+    // Need to deal with possibility of more than 26 markers so restart at A
+    var l = i;
+    while(l>25){ l -= 26 }
+    var letter = String.fromCharCode("A".charCodeAt(0) + l);
+    letteredIcon.image = "http://www.google.com/mapfiles/marker" + letter + ".png";
+    markerOptions = { icon:letteredIcon };
+    map.addOverlay( createMarker( i, markerOptions ) );
+  }
+}
+
+function createMarker( index, options) {
+  // The marker has to be created in a separate function
+  // to preserve the markers index
+  var latlng = new GLatLng(markers[index].lat, markers[index].lng);
+  var marker = new GMarker(latlng, options);
+//  GEvent.addListener(marker,"click", function() {
+//    window.location = markers[index].link;
+//  });
+  return marker;
+}
+</script>
+
+<script type='text/javascript'>
+/*
+markers.push({
+  position: 26,
+  lat: 36.1788,
+  lng: -115.345,
+  link: "http://my.jakewendt.com/stops/47"
+});
+*/
+</script>
+</head>
+<body onload='initialize(40.930208,-76.792678, 11)' onunload='GUnload()'>
+<div id='map'></div>
+</body>
+</html>
