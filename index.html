@@ -52,6 +52,9 @@ function addMarkers() {
 
 	var bounds = new google.maps.LatLngBounds();
 	for (var i=0; i < markers.length; i++ ) {
+		if( ( markers[i].lat == 0 ) || ( markers[i].lon == 0 ) ) {
+			continue;
+		}
 		var myLatLng = new google.maps.LatLng(markers[i].lat, markers[i].lng);
 
 		var icon_url = "http://www.housingmaps.com/mapfiles/marker.png";
