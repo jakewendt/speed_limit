@@ -18,7 +18,7 @@ puts
 #uri = URI.parse("https://github.com/api/v1/json/#{login}")
 #uri = URI.parse("http://www.wikispeedia.org/a/marks_bb.php?name=10&nelat=40.94&swlat=40.86&nelng=-76.78&swlng=-76.86")
 #	name is pointlessly required
-uri = URI.parse("http://www.wikispeedia.org/a/marks_bb.php?name=all&nelat=40.9407&swlat=40.905&nelng=-76.789&swlng=-76.851")
+#uri = URI.parse("http://www.wikispeedia.org/a/marks_bb.php?name=all&nelat=40.9407&swlat=40.905&nelng=-76.789&swlng=-76.851")
 #	NE 40.940196,-76.788454 - 40.933193,-76.786909 - 40.942011,-76.783133 - 40.940714,-76.788626
 #	SW 40.861178,-76.853514 - 40.883375,-76.848364 - 40.896093,-76.86347  - 40.905305,-76.851282
 #40.920742,-76.814718

@@ -40,6 +40,8 @@ function getsigns() {
 function xmlParser(xml) {
 	$(xml).find("marker").each(function () {
 		markers.push({
+// 	marks_result.php doesn't return cog
+//			cog: $(this).attr('cog'),
 			mph: $(this).attr('mph'),
 			lat: $(this).attr('lat'),
 			lng: $(this).attr('lng')
